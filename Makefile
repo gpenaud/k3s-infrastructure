@@ -1,3 +1,5 @@
+.ONESHELL:
+
 ## permanent variables
 PROJECT			?= github.com/gpenaud/k3s-infrastructure
 RELEASE			?= $(shell git describe --tags --abbrev=0)
@@ -53,9 +55,50 @@ install-k3s:
 chown-kubeconfig:
 	sudo chown gpenaud:gpenaud /etc/rancher/k3s/k3s.yaml
 
+# ---------------------------------------------------------------------------- #
+# cagette
+# ---------------------------------------------------------------------------- #
+
 ## import local docker images
 import-local-images:
+	cd /home/gpenaud/work/ecolieu/cagette
 	docker build -t cagette:1.0.0 .
 	docker save --output cagette-1.0.0.tar cagette:1.0.0
 	sudo k3s ctr images import cagette-1.0.0.tar
 	rm -f cagette-1.0.0.tar
+
+## add cagette helm repository
+add-repository-cagette:
+	helm repo add cagette "https://raw.githubusercontent.com/gpenaud/cagette/master/helm"
+
+## install cagette
+install-cagette:
+	helm install happy-poulette cagette/cagette-application
+
+## uninstall cagette
+uninstall-cagette:
+	helm uninstall happy-poulette
+
+# ---------------------------------------------------------------------------- #
+# libairterre
+# ---------------------------------------------------------------------------- #
+
+## import local docker images
+import-local-images:
+	cd /home/gpenaud/work/ecolieu/cagette
+	docker build -t cagette:1.0.0 .
+	docker save --output cagette-1.0.0.tar cagette:1.0.0
+	sudo k3s ctr images import cagette-1.0.0.tar
+	rm -f cagette-1.0.0.tar
+
+## add cagette helm repository
+add-repository-cagette:
+	helm repo add cagette "https://raw.githubusercontent.com/gpenaud/cagette/master/helm"
+
+## install cagette
+install-cagette:
+	helm install happy-poulette cagette/cagette-application
+
+## uninstall cagette
+uninstall-cagette:
+	helm uninstall happy-poulette

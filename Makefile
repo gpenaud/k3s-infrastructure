@@ -30,6 +30,14 @@ help:
 	@printf "\n"
 
 ## start k3s
+up-full:
+	$(MAKE) up
+	$(MAKE) import-cagette-image
+	$(MAKE) install-cagette
+	$(MAKE) install-prometheus
+
+
+## start k3s
 up:
 	$(MAKE) configure-iptables
 	$(MAKE) install-k3s
@@ -56,49 +64,71 @@ chown-kubeconfig:
 	sudo chown gpenaud:gpenaud /etc/rancher/k3s/k3s.yaml
 
 # ---------------------------------------------------------------------------- #
+# certificate management
+# ---------------------------------------------------------------------------- #
+
+install-mkcert:
+	sudo apt install --yes libnss3-tools
+	sudo wget -O /usr/local/bin/mkcert "https://github.com/FiloSottile/mkcert/releases/download/v1.4.3/mkcert-v1.4.3-linux-amd64" && chmod +x /usr/local/bin/mkcert
+	mkcert -install
+
+generate-certificates:
+	mkcert -cert-file tls.raw.crt -key-file tls.raw.key prometheus.localhost
+	base64 tls.raw.crt > tls.base64.crt && rm tls.raw.crt
+	base64 tls.raw.key > tls.base64.key && rm tls.raw.key
+
+# ---------------------------------------------------------------------------- #
+# cagette
+# ---------------------------------------------------------------------------- #
+
+## install prometheus
+install-prometheus:
+	helm install happy-lion prometheus
+
+## uninstall prometheus
+uninstall-prometheus:
+	helm uninstall happy-lion
+
+# ---------------------------------------------------------------------------- #
 # cagette
 # ---------------------------------------------------------------------------- #
 
 ## import local docker images
-import-local-images:
+import-cagette-image:
 	cd /home/gpenaud/work/ecolieu/cagette
-	docker build -t cagette:1.0.0 .
-	docker save --output cagette-1.0.0.tar cagette:1.0.0
-	sudo k3s ctr images import cagette-1.0.0.tar
-	rm -f cagette-1.0.0.tar
+	docker build -t cagette:1.0.0 . && docker save --output cagette-1.0.0.tar cagette:1.0.0
+	sudo k3s ctr images import cagette-1.0.0.tar && rm -f cagette-1.0.0.tar
 
 ## add cagette helm repository
-add-repository-cagette:
+add-cagette-helm-repository:
 	helm repo add cagette "https://raw.githubusercontent.com/gpenaud/cagette/master/helm"
 
 ## install cagette
 install-cagette:
-	helm install happy-poulette cagette/cagette-application
+	helm install happy-dog cagette/cagette-application
 
 ## uninstall cagette
 uninstall-cagette:
-	helm uninstall happy-poulette
+	helm uninstall happy-dog
 
 # ---------------------------------------------------------------------------- #
 # libairterre
 # ---------------------------------------------------------------------------- #
 
 ## import local docker images
-import-local-images:
-	cd /home/gpenaud/work/ecolieu/cagette
-	docker build -t cagette:1.0.0 .
-	docker save --output cagette-1.0.0.tar cagette:1.0.0
-	sudo k3s ctr images import cagette-1.0.0.tar
-	rm -f cagette-1.0.0.tar
+import-libairterre-image:
+	cd /home/gpenaud/work/libairterre
+	docker build -t libairterre:1.0.0 . && docker save --output libairterre-1.0.0.tar libairterre:1.0.0
+	sudo k3s ctr images import libairterre-1.0.0.tar && rm -f libairterre-1.0.0.tar
 
-## add cagette helm repository
-add-repository-cagette:
-	helm repo add cagette "https://raw.githubusercontent.com/gpenaud/cagette/master/helm"
+## add libairterre helm repository
+add-libairterre-helm-repository:
+	helm repo add libairterre "https://raw.githubusercontent.com/gpenaud/libairterre/master/helm"
 
-## install cagette
-install-cagette:
-	helm install happy-poulette cagette/cagette-application
+## install libairterre
+install-libairterre:
+	helm install happy-cat libairterre/libairterre-website
 
-## uninstall cagette
-uninstall-cagette:
-	helm uninstall happy-poulette
+## uninstall libairterre
+uninstall-libairterre:
+	helm uninstall happy-cat

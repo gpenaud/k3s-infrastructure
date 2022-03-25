@@ -35,6 +35,7 @@ up-full:
 	$(MAKE) import-cagette-image
 	$(MAKE) install-cagette
 	$(MAKE) install-prometheus
+	$(MAKE) install-grafana
 
 
 ## start k3s
@@ -73,7 +74,7 @@ install-mkcert:
 	mkcert -install
 
 generate-certificates:
-	mkcert -cert-file tls.raw.crt -key-file tls.raw.key prometheus.localhost
+	mkcert -cert-file tls.raw.crt -key-file tls.raw.key grafana.localhost
 	base64 tls.raw.crt > tls.base64.crt && rm tls.raw.crt
 	base64 tls.raw.key > tls.base64.key && rm tls.raw.key
 
@@ -88,6 +89,18 @@ install-prometheus:
 ## uninstall prometheus
 uninstall-prometheus:
 	helm uninstall happy-lion
+
+# ---------------------------------------------------------------------------- #
+# grafana
+# ---------------------------------------------------------------------------- #
+
+## install grafana
+install-grafana:
+	helm install happy-tiger grafana
+
+## uninstall grafana
+uninstall-grafana:
+	helm uninstall happy-tiger
 
 # ---------------------------------------------------------------------------- #
 # cagette

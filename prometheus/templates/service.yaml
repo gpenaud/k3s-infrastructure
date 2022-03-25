@@ -14,3 +14,13 @@ spec:
     - protocol: TCP
       port: 9090
       targetPort: 9090
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Chart.Name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  type: ExternalName
+  externalName: {{ .Release.Name }}-{{ .Chart.Name }}-service.{{ .Values.namespace }}.svc.cluster.local

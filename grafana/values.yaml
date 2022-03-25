@@ -1,0 +1,13 @@
+namespace: monitoring
+replicaCount: 1
+
+image:
+  repository: grafana/grafana
+  pullPolicy: IfNotPresent
+  tag: "8.4.4"
+
+vhost:
+  name: grafana.localhost
+
+pv:
+  host_path: /mnt/k3s-data/grafana

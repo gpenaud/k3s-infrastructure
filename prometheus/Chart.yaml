@@ -11,6 +11,10 @@ dependencies:
     name: node-exporter
     version: 1.0.0
 
+  - condition: blackbox-exporter.enabled
+    name: blackbox-exporter
+    version: 1.0.0
+
 description: Custom and non-operator prometheus for learning purpose and cagette supervision
 home: https://github.com/gpenaud
 icon: https://github.com/gpenaud/img/prometheus-logo.jpg

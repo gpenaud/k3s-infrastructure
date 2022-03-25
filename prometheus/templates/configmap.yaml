@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-{{ .Chart.Name }}-configmap
-  namespace: monitoring
+  namespace: {{ .Values.namespace }}
   labels:
     name: {{ .Release.Name }}-{{ .Chart.Name }}-configmap
 data:
@@ -40,6 +40,23 @@ data:
         scrape_interval: 5s
         static_configs:
           - targets: ['{{ .Release.Name }}-node-exporter-service.{{ index .Values "node-exporter" "namespace" }}.svc.cluster.local:9100']
+
+      - job_name: 'httpd'
+        scrape_interval: 20s
+        metrics_path: /probe
+        params:
+          module: [http_2xx]
+        static_configs:
+          - targets:
+            - http://cagette-application.default.svc.cluster.local
+            - https://www.google.fr
+        relabel_configs:
+          - source_labels: [__address__]
+            target_label: __param_target
+          - source_labels: [__param_target]
+            target_label: instance
+          - target_label: __address__
+            replacement: {{ .Release.Name }}-blackbox-exporter-service.{{ index .Values "node-exporter" "namespace" }}.svc.cluster.local:9115
 
       - job_name: 'kubernetes-apiservers'
         kubernetes_sd_configs:

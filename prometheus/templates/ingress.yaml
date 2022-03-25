@@ -2,12 +2,18 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ .Release.Name }}-{{ .Chart.Name }}-ingress
-  namespace: monitoring
+  namespace: {{ .Values.namespace }}
   annotations:
-    traefik.ingress.kubernetes.io/router.entrypoints: web
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/redirect-permanent: "true"
 spec:
+  tls:
+  - hosts:
+      - {{ .Values.vhost.name }}
+    secretName: {{ .Release.Name }}-{{ .Chart.Name }}-secret-tls
   rules:
-    - host: prometheus.localhost
+    - host: {{ .Values.vhost.name }}
       http:
         paths:
         - path: /
@@ -16,4 +22,4 @@ spec:
             service:
               name: {{ .Release.Name }}-{{ .Chart.Name }}-service
               port:
-                number: 80
+                number: 9090

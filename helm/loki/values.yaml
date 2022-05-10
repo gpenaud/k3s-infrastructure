@@ -1,0 +1,14 @@
+
+name: loki
+namespace: logs
+
+vhost:
+  name: prometheus.localhost
+
+loki:
+  enabled: true
+  namespace: logs
+
+promtail:
+  enabled: true
+  namespace: logs

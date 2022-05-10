@@ -1,0 +1,13 @@
+[controlplane]
+%{ for index, hostname in hostnames ~}
+%{ if length(regexall("controlplane", hostname)) > 0 ~}
+${hostname}.${network} ansible_host=${ips[index]}
+%{ endif ~}
+%{ endfor ~}
+
+[dataplane]
+%{ for index, hostname in hostnames ~}
+%{ if length(regexall("dataplane", hostname)) > 0 ~}
+${hostname}.${network} ansible_host=${ips[index]}
+%{ endif ~}
+%{ endfor ~}

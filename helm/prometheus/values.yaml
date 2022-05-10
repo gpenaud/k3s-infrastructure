@@ -1,0 +1,18 @@
+
+name: prometheus
+namespace: monitoring
+
+vhost:
+  name: prometheus.localhost
+
+kube-state-metrics:
+  enabled: true
+  namespaceOverride: monitoring
+
+node-exporter:
+  enabled: true
+  namespace: monitoring
+
+blackbox-exporter:
+  enabled: true
+  namespace: monitoring

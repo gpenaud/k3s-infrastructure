@@ -1,0 +1,97 @@
+---
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: happy-snake-loki
+  namespace: logs
+  annotations:
+    meta.helm.sh/release-name: happy-snake
+    meta.helm.sh/release-namespace: logs
+  creationTimestamp: "2022-03-25T21:20:21Z"
+  generation: 1
+  labels:
+    app: loki
+    app.kubernetes.io/managed-by: Helm
+    chart: loki-2.9.1
+    heritage: Helm
+    release: happy-snake
+spec:
+  podManagementPolicy: OrderedReady
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: loki
+      release: happy-snake
+  serviceName: happy-snake-loki-headless
+  template:
+    metadata:
+      annotations:
+        checksum/config: 28383e6e8a7ae260d6f54cbadd2ec655dde5709a8d4ae4f638f970c5e427692f
+        prometheus.io/port: http-metrics
+        prometheus.io/scrape: "true"
+      creationTimestamp: null
+      labels:
+        app: loki
+        name: loki
+        release: happy-snake
+    spec:
+      affinity: {}
+      containers:
+      - args:
+        - -config.file=/etc/loki/loki.yaml
+        image: grafana/loki:2.4.2
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /ready
+            port: http-metrics
+            scheme: HTTP
+          initialDelaySeconds: 45
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: loki
+        ports:
+        - containerPort: 3100
+          name: http-metrics
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /ready
+            port: http-metrics
+            scheme: HTTP
+          initialDelaySeconds: 45
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources: {}
+        securityContext:
+          readOnlyRootFilesystem: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/loki
+          name: config
+        - mountPath: /data
+          name: storage
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+        fsGroup: 10001
+        runAsGroup: 10001
+        runAsNonRoot: true
+        runAsUser: 10001
+      serviceAccount: happy-snake-loki
+      serviceAccountName: happy-snake-loki
+      terminationGracePeriodSeconds: 4800
+      volumes:
+      - name: config
+        secret:
+          defaultMode: 420
+          secretName: happy-snake-loki
+      - emptyDir: {}
+        name: storage

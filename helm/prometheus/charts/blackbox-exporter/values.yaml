@@ -1,0 +1,9 @@
+
+namespace: monitoring
+image:
+  repository: prom/blackbox-exporter
+  pullPolicy: IfNotPresent
+  tag: "v0.15.1"
+
+vhost:
+  name: blackbox-exporter.localhost

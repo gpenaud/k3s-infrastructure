@@ -1,0 +1,5 @@
+[controlplane]
+controlplane-01.k8s ansible_host=10.101.0.219
+
+[dataplane]
+dataplane-01.k8s ansible_host=10.101.0.239

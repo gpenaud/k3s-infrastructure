@@ -1,0 +1,26 @@
+apiVersion: v2
+version: 0.1.0
+
+name: loki
+appVersion: 0.1.0
+
+dependencies:
+  - condition: loki.enabled
+    name: loki
+    version: 1.0.0
+
+  - condition: promtail.enabled
+    name: promtail
+    version: 1.0.0
+
+description: Custom and non-operator loki stack for learning purpose and cagette supervision
+home: https://github.com/gpenaud
+icon: https://github.com/gpenaud/img/loki-logo.jpg
+
+keywords:
+  - log
+  - supervision
+
+maintainers:
+  - email: guillaume.penaud@gmail.com
+    name: Guillaume Penaud

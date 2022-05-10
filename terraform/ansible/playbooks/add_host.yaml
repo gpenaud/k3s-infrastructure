@@ -1,0 +1,14 @@
+# ------------------------------------------------------------------------------
+# provision vm with k3s
+# ------------------------------------------------------------------------------
+- hosts: localhost
+  gather_facts: no
+  become: yes
+  tasks:
+    - name: replace server ip
+      become: yes
+      lineinfile:
+        state: present
+        path: /etc/hosts
+        regexp: "{{ vm_ip }}"
+        line: "{{ vm_ip }} {{ vhost }}"

@@ -111,7 +111,7 @@ uninstall-loki:
 # ---------------------------------------------------------------------------- #
 
 ## import local docker images
-import-cagette-images:
+cagette-import-images:
 	cd /home/gpenaud/work/ecolieu/cagette ; docker build -t cagette:1.0.0 . ; docker save --output cagette-1.0.0.tar cagette:1.0.0 ;\
 	sudo k3s ctr images import cagette-1.0.0.tar ; rm -f cagette-1.0.0.tar
 	cd /home/gpenaud/work/ecolieu/mailer ; docker build -t cagette-mailer:1.0.0 . ; docker save --output cagette-mailer-1.0.0.tar cagette-mailer:1.0.0 ; \
@@ -120,17 +120,22 @@ import-cagette-images:
 ## add cagette helm repository
 add-cagette-helm-repository:
 	helm repo add cagette "https://raw.githubusercontent.com/gpenaud/cagette/master/helm"
+	helm dependency update /home/gpenaud/work/ecolieu/helm-cagette
+	helm dependency build /home/gpenaud/work/ecolieu/helm-cagette
 
 ## install cagette
-install-cagette:
-	# helm repo add bitnami "https://charts.bitnami.com/bitnami"
-	# helm dependency update /home/gpenaud/work/ecolieu/helm-cagette
-	# helm dependency build /home/gpenaud/work/ecolieu/helm-cagette
+cagette-install:
 	helm upgrade --install happy-dog /home/gpenaud/work/ecolieu/helm-cagette
 
 ## uninstall cagette
-uninstall-cagette:
+cagette-uninstall:
 	helm uninstall happy-dog
+
+cagette-database-backup:
+	kubectl exec $(shell kubectl get pods -l app_name=mysql -o name) -- mysqldump --no-tablespaces -u docker -pdocker db > /tmp/development.sql
+
+cagette-database-restore:
+	kubectl exec -it $(shell kubectl get pods -l app_name=mysql -o name) -- mysql -u docker -pdocker db < /home/gpenaud/work/ecolieu/cagette/docker/mysql/dumps/development.sql
 
 # ---------------------------------------------------------------------------- #
 # libairterre
